@@ -1,0 +1,9 @@
+::ng-deep span {
+  &.red {
+    color: red;
+  }
+
+  &.green {
+    color: green;
+  }
+}

@@ -1,0 +1,35 @@
+<div class="padding-sides">
+    <div class="row">
+      <div class="col-xl-12">
+
+        <h1>{{ player?.name }}</h1>
+
+      </div>
+
+      <div class="col-xl-12">
+        <canvas
+          baseChart height="75"
+          [datasets]="lineChartData"
+          [options]="lineChartOptions"
+          [chartType]="'line'">
+        </canvas>
+      </div>
+
+      <div class="col-xl-12">
+        <br />
+        <h1>Logs</h1>
+        <br />
+
+        <app-log-table *ngIf="pid" [pid]="pid"></app-log-table>
+      </div>
+
+      <div class="col-12">
+          <br />
+          <br />
+          <br />
+          <br />
+          <h1>Vehicles</h1>
+          <app-vehicle-table [pid]="pid"></app-vehicle-table>
+      </div>
+    </div>
+  </div>

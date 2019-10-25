@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { setTheme } from 'ngx-bootstrap/utils';
+import { AuthenticationService } from './authentication.service';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +8,19 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'AnzusAdmin';
+  showLogout = false;
+  constructor(
+    private authenticationService: AuthenticationService,
+  ) {
+    setTheme('bs4');
+
+    if (this.authenticationService.currentUserValue) {
+      this.showLogout = true;
+    }
+  }
+
+  logout() {
+    this.authenticationService.logout();
+    location.reload(true);
+  }
 }

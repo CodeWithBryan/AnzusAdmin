@@ -1,0 +1,46 @@
+
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Player UID</th>
+      <th scope="col">Owner/Target</th>
+      <th scope="col">Action</th>
+      <th scope="col">Information</th>
+      <!-- <th scope="col">Location</th> -->
+      <th scope="col">Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let log of logs">
+      <td><a [routerLink]="['/player/' + log?.pid ]" [tooltip]="log?.pid" placement="top">{{ names[log?.pid] || log?.pid }}</a></td>
+      <td>
+        <ng-container *ngIf="log?.owner === 'nil'">None</ng-container>
+        <a *ngIf="log?.owner !== 'nil'" [routerLink]="['/player/' + log?.owner ]">{{ log?.owner }}</a>
+      </td>
+      <td>{{ parseAction(log?.action) }}</td>
+      <td *ngIf="log?.action !== 'cashChange' && log?.action !== 'bankChange'">{{ log?.info }}</td>
+      <td *ngIf="log?.action === 'cashChange' || log?.action === 'bankChange'" [innerHTML]="parseMoney(log?.info)"></td>
+      <!-- <td>{{ log?.location }}</td> -->
+      <td><span [tooltip]="timestamps[log?.id]?.timestamp" placement="top">{{ timestamps[log?.id]?.from }}</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<nav aria-label="Page navigation example" class="float-right">
+  <ul class="pagination">
+    <li class="page-item" (click)="changePage(currentPage - 1)" [ngClass]="{'disabled': currentPage === 1}"><a class="page-link">Previous</a></li>
+
+    <ng-container *ngFor="let page of pageList">
+      <li
+        class="page-item"
+        [ngClass]="{'active': page === currentPage}"
+        *ngIf="page > 0 && page <= pages"
+        (click)="changePage(page)"
+      >
+        <a class="page-link">{{ page }}</a>
+      </li>
+    </ng-container>
+
+    <li class="page-item" (click)="changePage(currentPage + 1)" [ngClass]="{'disabled': currentPage === pages}"><a class="page-link">Next</a></li>
+  </ul>
+</nav>

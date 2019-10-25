@@ -1,0 +1,45 @@
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Type</th>
+      <th scope="col">Classname</th>
+      <th scope="col">Active</th>
+      <th scope="col">Alive</th>
+      <th scope="col">Insured</th>
+      <th scope="col">Impounded</th>
+      <th scope="col">Side</th>
+      <th scope="col">Fuel</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let veh of vehicles">
+      <td>{{ veh?.type }}</td>
+      <td>{{ veh?.classname }}</td>
+      <td>{{ veh?.active == '0' ? 'False' : 'True' }}</td>
+      <td>{{ veh?.alive == '0' ? 'False' : 'True' }}</td>
+      <td>{{ veh?.insured == '0' ? 'False' : 'True' }}</td>
+      <td>{{ veh?.impound == '0' ? 'False' : 'True' }}</td>
+      <td>{{ veh?.side }}</td>
+      <td>{{ veh?.fuel }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<nav aria-label="Page navigation example" class="float-right">
+  <ul class="pagination">
+    <li class="page-item" (click)="changePage(currentPage - 1)" [ngClass]="{'disabled': currentPage === 1}"><a class="page-link">Previous</a></li>
+
+    <ng-container *ngFor="let page of pageList">
+      <li
+        class="page-item"
+        [ngClass]="{'active': page === currentPage}"
+        *ngIf="page > 0 && page <= pages"
+        (click)="changePage(page)"
+      >
+        <a class="page-link">{{ page }}</a>
+      </li>
+    </ng-container>
+
+    <li class="page-item" (click)="changePage(currentPage + 1)" [ngClass]="{'disabled': currentPage === pages}"><a class="page-link">Next</a></li>
+  </ul>
+</nav>
