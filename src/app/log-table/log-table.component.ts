@@ -33,9 +33,9 @@ export class LogTableComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.callAPI();
 
-    // setInterval(() => {
-    //   this.renderTimestamps();
-    // }, 10 * 1000);
+    setInterval(() => {
+      this.renderTimestamps();
+    }, 10 * 1000);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -50,7 +50,7 @@ export class LogTableComponent implements OnInit, OnChanges {
         this.limit = res.limit;
         this.total = res.total;
         this.offset = res.offset;
-        this.logs = res.results;
+        this.logs = res.data;
 
         this.requestNames();
         this.renderTimestamps();
@@ -61,7 +61,7 @@ export class LogTableComponent implements OnInit, OnChanges {
         this.limit = res.limit;
         this.total = res.total;
         this.offset = res.offset;
-        this.logs = res.results;
+        this.logs = res.data;
 
         this.requestNames();
         this.renderTimestamps();
@@ -78,10 +78,18 @@ export class LogTableComponent implements OnInit, OnChanges {
       }
     });
 
+    if (pids.length < 1) {
+      return;
+    }
+
     const sub = this.api.getPlayerNames(pids)
       .subscribe((res: any) => {
 
-        res.forEach(name => {
+        if (res.statusCode !== 200) {
+          return console.error('Failed to get Player Names');
+        }
+
+        res.data.forEach(name => {
           this.names[name.pid] = name.name;
         });
 
@@ -134,11 +142,11 @@ export class LogTableComponent implements OnInit, OnChanges {
   }
 
   parseTimestamp(time) {
-    return moment.utc(time).local().add(1, 'hours').format('MMM DD, YYYY - h:mm:ss a');
+    return moment.utc(time).local().format('MMM DD, YYYY - h:mm:ss a');
   }
 
   parseFrom(time) {
-    return moment.utc(time).local().add(1, 'hours').fromNow();
+    return moment.utc(time).local().fromNow();
   }
 
   parseMoney(input) {

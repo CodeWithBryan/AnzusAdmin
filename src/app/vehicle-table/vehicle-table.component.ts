@@ -37,8 +37,9 @@ export class VehicleTableComponent implements OnInit, OnChanges {
   callAPI() {
     const sub = this.api.getPlayerVehicles(this.pid, this.limit, this.offset)
       .subscribe((res: any) => {
-        this.vehicles = res;
-        console.log(this.vehicles);
+        if (res.statusCode === 200) {
+          this.vehicles = res.data;
+        }
         sub.unsubscribe();
       });
   }

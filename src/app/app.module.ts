@@ -31,6 +31,7 @@ import { JwtInterceptor } from './JwtInterceptor';
 import { ErrorInterceptor } from './ErrorInterceptor';
 import { LoginComponent } from './login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FindPlayerComponent } from './find-player/find-player.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     PlayerComponent,
     LogTableComponent,
     VehicleTableComponent,
-    LoginComponent
+    LoginComponent,
+    FindPlayerComponent
   ],
   imports: [
     BrowserModule,

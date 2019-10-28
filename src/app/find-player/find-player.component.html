@@ -1,0 +1,55 @@
+<div class="col-md-6 offset-md-3 mt-5">
+  <div class="card">
+    <h4 class="card-header">Find Player</h4>
+    <div class="card-body row">
+      <div class="col-12">
+
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Player Name or Player UID" (change)="searchInput = $event.target.value" />
+          <div class="input-group-append">
+              <button [disabled]="loading" class="btn btn-primary" (click)="searchForPlayer()">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                Find Player
+              </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="col-8 offset-2">
+  <br />
+  <br />
+  <br />
+  <h1>Results</h1>
+  <br />
+  <br />
+  <br />
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">PID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Cash</th>
+        <th scope="col">Bank</th>
+        <th scope="col">Experience Level</th>
+        <th scope="col">Experience Points</th>
+        <th scope="col">Last Seen</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let player of results">
+        <td><a [routerLink]="['/player/', player?.pid ]">{{ player?.pid }}</a></td>
+        <td>{{ player?.name }}</td>
+        <td>{{ player?.cash }}</td>
+        <td>{{ player?.bankacc }}</td>
+        <td>{{ player?.exp_level }}</td>
+        <td>{{ player?.exp_perkPoints }}</td>
+        <td>{{ parseTimestamp(player?.last_seen) }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

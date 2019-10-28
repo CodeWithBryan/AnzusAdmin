@@ -4,10 +4,12 @@ import { LogsComponent } from './logs/logs.component';
 import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './auth.guard';
+import { FindPlayerComponent } from './find-player/find-player.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'logs', component: LogsComponent, canActivate: [AuthGuard] },
+  { path: 'search', component: FindPlayerComponent, canActivate: [AuthGuard] },
   { path: 'player/:pid', component: PlayerComponent, canActivate: [AuthGuard] },
   { path: '**',
     redirectTo: '/logs',

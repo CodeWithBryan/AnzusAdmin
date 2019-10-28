@@ -21,6 +21,7 @@
     "@angular/router": "~8.0.1",
     "bootstrap": "^4.3.1",
     "chart.js": "^2.8.0",
+    "chartjs-plugin-annotation": "^0.5.7",
     "chartjs-plugin-zoom": "^0.7.4",
     "moment": "^2.24.0",
     "ng2-charts": "^2.3.0",

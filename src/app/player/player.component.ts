@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ChartPoint, ChartOptions } from 'chart.js';
+import 'chartjs-plugin-annotation';
 import 'chartjs-plugin-zoom';
 import * as moment from 'moment';
+import { BaseChartDirective } from 'ng2-charts';
 
 @Component({
   selector: 'app-player',
@@ -12,18 +14,24 @@ import * as moment from 'moment';
 })
 export class PlayerComponent implements OnInit {
 
+  @ViewChild(BaseChartDirective, { static: false }) chart: BaseChartDirective;
+
   pid = '';
   player: any = {};
 
   cashHistory = [];
   bankHistory = [];
 
+  hours = 6;
+
+  moment = moment;
+
   public lineChartType = 'line';
   public lineChartData: any[] = [
     { data: [ ], label: 'Bank', fill: false, pointRadius: 5, pointHoverRadius: 8, pointStyle: 'rectRounded' },
     { data: [ ], label: 'Cash', fill: false, pointRadius: 5, pointHoverRadius: 8, pointStyle: 'rectRounded' },
   ];
-  public lineChartOptions: ChartOptions = {
+  public lineChartOptions: any = {
     responsive: true,
     title: {
       display: true,
@@ -46,6 +54,11 @@ export class PlayerComponent implements OnInit {
         }
       }],
       yAxes: [{
+        ticks: {
+          callback: (value, index, values) => {
+            return `$${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+          },
+        },
         scaleLabel: {
           display: true,
           labelString: 'value'
@@ -62,13 +75,20 @@ export class PlayerComponent implements OnInit {
           enabled: true,
           mode: 'x'
         }
-      }
+      },
     },
+    annotation: {
+      events: [ 'click' ],
+      annotations: [],
+    }
   };
+
+  logInFocus: any;
 
   constructor(
     private route: ActivatedRoute,
     private api: ApiService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -77,23 +97,60 @@ export class PlayerComponent implements OnInit {
 
       const sub = this.api.getPlayerInformation(this.pid)
         .subscribe((res: any) => {
-          this.player = res.player[0];
+          if (res.statusCode !== 200) {
+            return this.router.navigateByUrl('/logs');
+          }
+
+          this.player = res.data;
           sub.unsubscribe();
         });
 
       const sub2 = this.api.getPlayerMoneyHistory(this.pid)
         .subscribe((res: any) => {
-          this.parseData(res);
+          if (res.statusCode === 200) {
+            this.parseData(res.data);
+          }
           sub2.unsubscribe();
         });
+
+      this.getNonMoneyLogData();
    });
+  }
+
+  getNonMoneyLogData() {
+    const sub3 = this.api.getLogsForPlayerNoMoney(this.pid, 60 * this.hours)
+    .subscribe((res: any) => {
+      this.lineChartOptions.annotation.annotations = [];
+
+      res.data.forEach(log => {
+        (this.chart.chart.options as any).annotation.annotations.push({
+          type: 'line',
+          mode: 'vertical',
+          scaleID: 'x-axis-0',
+          value: moment.utc(log.time).local(),
+          borderColor: 'rgba(75, 192, 192, 0.5)',
+          borderWidth: 4,
+          label: {
+            enabled: true,
+            content: log.action
+          },
+          onClick: () => {
+            this.logInFocus = log;
+          }
+        });
+
+        this.chart.chart.update();
+
+        sub3.unsubscribe();
+      });
+    });
   }
 
   parseData(data: any) {
     data.forEach(log => {
 
       const chartPoint: ChartPoint = {
-        x: (moment.utc(log.time).local().add(1, 'hours') as any),
+        x: (moment.utc(log.time).local() as any),
         y: this.parseMoney(log.info),
       };
 
@@ -110,6 +167,23 @@ export class PlayerComponent implements OnInit {
   parseMoney(input) {
     const parts = input.split(':');
     return parseInt(Number(parts[2]).toPrecision(), 0);
+  }
+
+  parseUIMoney(input) {
+    const parts = input.split(':');
+    const change = parseInt(Number(parts[1]).toPrecision(), 0);
+    const updated = Number(parts[2]).toPrecision();
+    let changeColor = 'red';
+
+    if (change > 0) {
+      changeColor = 'green';
+    }
+
+    return `<span class="${changeColor}">$${change}</span> - New Balance: $${updated}`;
+  }
+
+  clearInFocus() {
+    this.logInFocus = false;
   }
 
 }

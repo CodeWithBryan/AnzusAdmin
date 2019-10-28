@@ -1,9 +1,7 @@
 <div class="padding-sides">
     <div class="row">
       <div class="col-xl-12">
-
         <h1>{{ player?.name }}</h1>
-
       </div>
 
       <div class="col-xl-12">
@@ -13,6 +11,35 @@
           [options]="lineChartOptions"
           [chartType]="'line'">
         </canvas>
+      </div>
+
+      <div class="col-12" *ngIf="logInFocus">
+        <h1>Log In Focus <small>(clicked on via chart above)</small></h1>
+        <button class="btn btn-danger float-right" (click)="clearInFocus()">Clear</button>
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Player UID</th>
+              <th scope="col">Owner/Target</th>
+              <th scope="col">Action</th>
+              <th scope="col">Information</th>
+              <th scope="col">Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ player?.name }}</td>
+              <td>
+                <ng-container *ngIf="logInFocus?.owner === 'nil'">None</ng-container>
+                <a *ngIf="logInFocus?.owner !== 'nil'" [routerLink]="['/player/' + logInFocus?.owner ]">{{ logInFocus?.owner }}</a>
+              </td>
+              <td>{{ logInFocus?.action }}</td>
+              <td *ngIf="logInFocus?.action !== 'cashChange' && logInFocus?.action !== 'bankChange'">{{ logInFocus?.info }}</td>
+              <td *ngIf="logInFocus?.action === 'cashChange' || logInFocus?.action === 'bankChange'" [innerHTML]="parseUIMoney(logInFocus?.info)"></td>
+              <td>{{ moment.utc(logInFocus?.time).local() }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div class="col-xl-12">
