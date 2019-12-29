@@ -24,6 +24,7 @@
     "chartjs-plugin-annotation": "^0.5.7",
     "chartjs-plugin-zoom": "^0.7.4",
     "moment": "^2.24.0",
+    "ng-pick-datetime": "^7.0.0",
     "ng2-charts": "^2.3.0",
     "ngx-bootstrap": "^5.2.0",
     "rxjs": "~6.4.0",

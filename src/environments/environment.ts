@@ -4,8 +4,8 @@
 
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:3000',
-  // apiUrl: 'http://logs.findbryan.com:8573',
+  // apiUrl: 'http://localhost:3000',
+  apiUrl: 'http://hide.findbryan.com:8573',
 };
 
 /*

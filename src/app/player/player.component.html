@@ -1,10 +1,26 @@
 <div class="padding-sides">
     <div class="row">
-      <div class="col-xl-12">
+      <div class="col-xl-12 name">
         <h1>{{ player?.name }}</h1>
       </div>
 
-      <div class="col-xl-12">
+      <div class="col-3">
+        <h2>Cash: <span class="badge badge-primary">{{ player?.cash }}</span></h2>
+      </div>
+      <div class="col-3">
+        <h2>Bank: <span class="badge badge-primary">{{ player?.bankacc }}</span></h2>
+      </div>
+      <div class="col-3">
+        <h2>Bitcoin: <span class="badge badge-primary">{{ player?.bitcoin }}</span></h2>
+      </div>
+      <div class="col-3">
+        <h2>Seen: <span class="badge badge-primary">{{ parseFrom(player?.last_seen) }}</span></h2>
+      </div>
+
+      <div class="col-xl-12 chart">
+        <div class="no-results" *ngIf="noMoneyHistory && noLogHistory">
+          No results for selected timeframe
+        </div>
         <canvas
           baseChart height="75"
           [datasets]="lineChartData"
@@ -13,8 +29,8 @@
         </canvas>
       </div>
 
-      <div class="col-12" *ngIf="logInFocus">
-        <h1>Log In Focus <small>(clicked on via chart above)</small></h1>
+      <div class="col-12" *ngIf="logsInFocus.length > 0">
+        <h1>Logs In Focus <small>(clicked on via chart above)</small></h1>
         <button class="btn btn-danger float-right" (click)="clearInFocus()">Clear</button>
         <table class="table">
           <thead class="thead-dark">
@@ -27,7 +43,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr *ngFor="let logInFocus of logsInFocus">
               <td>{{ player?.name }}</td>
               <td>
                 <ng-container *ngIf="logInFocus?.owner === 'nil'">None</ng-container>
@@ -36,7 +52,7 @@
               <td>{{ logInFocus?.action }}</td>
               <td *ngIf="logInFocus?.action !== 'cashChange' && logInFocus?.action !== 'bankChange'">{{ logInFocus?.info }}</td>
               <td *ngIf="logInFocus?.action === 'cashChange' || logInFocus?.action === 'bankChange'" [innerHTML]="parseUIMoney(logInFocus?.info)"></td>
-              <td>{{ moment.utc(logInFocus?.time).local() }}</td>
+              <td>{{ moment.utc(logInFocus?.time).local().subtract(1, 'hours') }}</td>
             </tr>
           </tbody>
         </table>

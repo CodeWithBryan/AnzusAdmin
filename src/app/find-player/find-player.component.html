@@ -5,7 +5,7 @@
       <div class="col-12">
 
         <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Player Name or Player UID" (change)="searchInput = $event.target.value" />
+          <input type="text" class="form-control" placeholder="Player Name or Player UID" (change)="searchInput = $event.target.value" (keydown.enter)="searchForPlayer()" />
           <div class="input-group-append">
               <button [disabled]="loading" class="btn btn-primary" (click)="searchForPlayer()">
                 <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>

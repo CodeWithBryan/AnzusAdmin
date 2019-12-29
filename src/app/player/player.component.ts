@@ -83,7 +83,11 @@ export class PlayerComponent implements OnInit {
     }
   };
 
-  logInFocus: any;
+  noMoneyHistory: boolean;
+  noLogHistory: boolean;
+  logsInFocus = [];
+  lastClickedLog: any;
+  nonMoneyLogs: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -97,12 +101,10 @@ export class PlayerComponent implements OnInit {
 
       const sub = this.api.getPlayerInformation(this.pid)
         .subscribe((res: any) => {
-          if (res.statusCode !== 200) {
-            return this.router.navigateByUrl('/logs');
-          }
-
           this.player = res.data;
           sub.unsubscribe();
+        }, err => {
+          return this.router.navigateByUrl('/logs');
         });
 
       const sub2 = this.api.getPlayerMoneyHistory(this.pid)
@@ -110,7 +112,12 @@ export class PlayerComponent implements OnInit {
           if (res.statusCode === 200) {
             this.parseData(res.data);
           }
+
           sub2.unsubscribe();
+        }, err => {
+          if (err.status === 404) {
+            this.noMoneyHistory = true;
+          }
         });
 
       this.getNonMoneyLogData();
@@ -120,6 +127,7 @@ export class PlayerComponent implements OnInit {
   getNonMoneyLogData() {
     const sub3 = this.api.getLogsForPlayerNoMoney(this.pid, 60 * this.hours)
     .subscribe((res: any) => {
+      this.nonMoneyLogs = res.data;
       this.lineChartOptions.annotation.annotations = [];
 
       res.data.forEach(log => {
@@ -127,15 +135,15 @@ export class PlayerComponent implements OnInit {
           type: 'line',
           mode: 'vertical',
           scaleID: 'x-axis-0',
-          value: moment.utc(log.time).local(),
+          value: moment.utc(log.time).local().subtract(1, 'hours'),
           borderColor: 'rgba(75, 192, 192, 0.5)',
           borderWidth: 4,
           label: {
             enabled: true,
             content: log.action
           },
-          onClick: () => {
-            this.logInFocus = log;
+          onClick: e => {
+            this.addLogInFocus(log, e.shiftKey);
           }
         });
 
@@ -143,14 +151,46 @@ export class PlayerComponent implements OnInit {
 
         sub3.unsubscribe();
       });
+    }, err => {
+      if (err.status === 404) {
+        this.noLogHistory = true;
+      }
     });
+  }
+
+  addLogInFocus(log, addMultiple) {
+
+    // If we're holding shift, select all logs between logs
+    if (addMultiple && this.lastClickedLog && this.lastClickedLog.id !== log.id) {
+      const firstId = this.lastClickedLog.id > log.id ? log.id : this.lastClickedLog.id;
+      const lastId = this.lastClickedLog.id === firstId ? log.id : this.lastClickedLog.id;
+
+      this.nonMoneyLogs.forEach(l => {
+        if (l.id > firstId && l.id < lastId) {
+          const exist = this.logsInFocus.find(lo => lo.id === l.id);
+          if (!exist) {
+            this.logsInFocus.push(l);
+          }
+        }
+      });
+    }
+
+    // Add the log we clicked
+    const exists = this.logsInFocus.find(l => l.id === log.id);
+    if (!exists) {
+      this.logsInFocus.push(log);
+      this.logsInFocus.sort((a, b) => a.id < b.id ? -1 : 1);
+    }
+
+    // Update our last clicked log for multiple selections
+    this.lastClickedLog = log;
   }
 
   parseData(data: any) {
     data.forEach(log => {
 
       const chartPoint: ChartPoint = {
-        x: (moment.utc(log.time).local() as any),
+        x: (moment.utc(log.time).local().subtract(1, 'hours') as any),
         y: this.parseMoney(log.info),
       };
 
@@ -169,6 +209,10 @@ export class PlayerComponent implements OnInit {
     return parseInt(Number(parts[2]).toPrecision(), 0);
   }
 
+  parseFrom(time) {
+    return moment.utc(time).local().subtract(1, 'hours').fromNow();
+  }
+
   parseUIMoney(input) {
     const parts = input.split(':');
     const change = parseInt(Number(parts[1]).toPrecision(), 0);
@@ -183,7 +227,7 @@ export class PlayerComponent implements OnInit {
   }
 
   clearInFocus() {
-    this.logInFocus = false;
+    this.logsInFocus = [];
   }
 
 }

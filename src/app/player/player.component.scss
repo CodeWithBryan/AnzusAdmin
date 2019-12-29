@@ -1,3 +1,27 @@
 .padding-sides {
   padding: 0 150px;
 }
+
+.name {
+  margin: 20px 0;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.chart {
+  margin: 20px 0;
+}
+
+
+.no-results {
+  position: absolute;
+  text-align: center;
+  width: 500px;
+  background: #ffffff;
+  padding: 30px;
+  font-size: 24px;
+  color: red;
+  margin: 150px calc(50% - 250px);
+}

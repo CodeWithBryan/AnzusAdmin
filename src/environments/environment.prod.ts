@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://logs.findbryan.com:8573',
+  apiUrl: 'http://hide.findbryan.com:8573',
 };

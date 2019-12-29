@@ -30,8 +30,6 @@ export class FindPlayerComponent implements OnInit {
         this.loading = false;
         this.results = res.data;
 
-        console.log(this.results);
-
         sub.unsubscribe();
       },
       err => {
@@ -45,7 +43,7 @@ export class FindPlayerComponent implements OnInit {
   }
 
   parseTimestamp(time) {
-    return moment.utc(time).local().format('MMM DD, YYYY - h:mm:ss a');
+    return moment.utc(time).local().subtract(1, 'hours').format('MMM DD, YYYY - h:mm:ss a');
   }
 
 }

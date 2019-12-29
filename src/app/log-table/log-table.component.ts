@@ -142,11 +142,11 @@ export class LogTableComponent implements OnInit, OnChanges {
   }
 
   parseTimestamp(time) {
-    return moment.utc(time).local().format('MMM DD, YYYY - h:mm:ss a');
+    return moment.utc(time).local().subtract(1, 'hours').format('MMM DD, YYYY - h:mm:ss a');
   }
 
   parseFrom(time) {
-    return moment.utc(time).local().fromNow();
+    return moment.utc(time).local().subtract(1, 'hours').fromNow();
   }
 
   parseMoney(input) {
